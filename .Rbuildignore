@@ -1,0 +1,11 @@
+^\.git$
+^\.gitignore$
+Rplots\.pdf$
+^\.Rproj\.user$
+^data-raw$
+^\.Rhistory$
+^README\.Rmd$
+^.*\.Rproj$
+^output_end_to_end$
+^output_shortest_analysis$
+^\.DS_Store$

@@ -1,0 +1,241 @@
+---
+title: "Reproducing the LCBM panel / WES Jaccard subtypes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reproducing the LCBM panel / WES Jaccard subtypes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  eval = requireNamespace("maftools", quietly = TRUE)
+)
+```
+
+## Overview
+
+`OncoclassfieR` packages the unsupervised **Jaccard 4-subtyping** used in the
+LCBM / HSYY analysis. This vignette reproduces the current results from the
+datasets shipped with the package.
+
+The two cohorts are clustered **separately** with one shared parameter set.
+Panel and WES samples are not pooled because their assayed gene sets differ
+too much for a joint clustering to be interpreted biologically.
+
+| Parameter | Value |
+| --- | --- |
+| `max_features` | 20 (top-20 most frequently mutated genes) |
+| similarity | Jaccard, `|A∩B| / |A∪B|` on the per-sample mutation gene set |
+| `enhancement` | 0.6 (similarity matrix raised to the 0.6 power) |
+| distance | euclidean on the similarity row profiles (`pheatmap` default, **not** `1 - Jaccard`) |
+| `clustering_method` | `"ward.D2"` |
+| `n_clusters` | 4 |
+| `drop_empty_samples` | `TRUE` |
+| seed | 1234 |
+| VAF filter (upstream) | `VAF >= 0.02`, missing VAF kept |
+
+## The data
+
+Three real datasets ship with the package:
+
+* `LCBM_panel_maf` — 4691 variants, 358 samples, 292 genes
+  (Huashan 105 + cBioPortal/MSK-IMPACT 253).
+* `LCBM_WES_maf` — 1585 variants, 157 samples, 266 genes
+  (WES_SHANGHAI 64 + cellreport_WES 93).
+* `LCBM_sample_annotation` — clinical annotation for all 515 samples, keyed on
+  `Tumor_Sample_Barcode`.
+
+Both MAF objects are already restricted to the 298 genes shared by the
+Huashan panel and MSK-505 and already filtered to `VAF >= 0.02`. The upstream
+steps that produced them are **not** part of this package: the raw four-cohort
+files are not distributed, so the reproduction starts from these objects.
+
+## Reproducing the 4-subtype split
+
+```{r cluster}
+library(OncoclassfieR)
+
+max_features      <- 20
+n_clusters        <- 4
+clustering_method <- "ward.D2"
+enhancement       <- 0.6
+seed              <- 1234
+
+mafs <- list(panel = LCBM_panel_maf, WES = LCBM_WES_maf)
+clusters <- list()
+
+for (grp in names(mafs)) {
+  set.seed(seed)
+  maf_top <- preprocess_maf_top_genes(mafs[[grp]], max_features = max_features,
+                                      drop_empty_samples = TRUE)
+  res <- jaccard_cluster(maf_top, n_clusters = n_clusters,
+                         clustering_method = clustering_method,
+                         enhancement = enhancement,
+                         show_colnames = FALSE, plot = FALSE)
+  clusters[[grp]] <- res$sample_clusters
+  cat("\n", grp, ": ", nrow(res$sample_clusters), " samples\n", sep = "")
+  print(table(res$sample_clusters$cluster))
+}
+```
+
+The panel cohort gives `r paste(as.integer(table(clusters$panel$cluster)), collapse = " / ")`
+samples across the four subtypes and the WES cohort gives
+`r paste(as.integer(table(clusters$WES$cluster)), collapse = " / ")`, matching
+the published analysis (342 -> 178 / 65 / 73 / 26 and 145 -> 28 / 71 / 28 / 18).
+
+Samples with no mutation among the top-20 genes never enter the similarity
+matrix (`drop_empty_samples = TRUE`), which is why 358 panel / 157 WES samples
+produce 342 / 145 rows.
+
+### Cluster composition
+
+```{r composition}
+for (grp in names(mafs)) {
+  dat <- as.data.frame(mafs[[grp]]@data)
+  cohort <- as.character(dat$cohort_name[
+    match(clusters[[grp]]$Tumor_Sample_Barcode,
+          as.character(dat$Tumor_Sample_Barcode))])
+  cat("\n", grp, " cohort:\n", sep = "")
+  print(table(cluster = clusters[[grp]]$cluster, cohort = cohort))
+}
+```
+
+### The most frequently mutated genes
+
+```{r top-genes}
+lapply(mafs, function(maf) {
+  counts <- sort(table(maf@data$Hugo_Symbol), decreasing = TRUE)
+  head(counts, 10)
+})
+```
+
+### Why four subtypes?
+
+```{r silhouette, fig.height = 4}
+set.seed(seed)
+res_panel <- jaccard_cluster(
+  preprocess_maf_top_genes(LCBM_panel_maf, max_features = max_features,
+                           drop_empty_samples = TRUE),
+  n_clusters = n_clusters, clustering_method = clustering_method,
+  enhancement = enhancement, plot = FALSE)
+
+sil <- silhouette_analysis(res_panel, k_range = 3:10,
+                           clustering_method = clustering_method)
+sil$silhouette
+```
+
+### The similarity heatmap
+
+```{r heatmap, fig.width = 8, fig.height = 7}
+hm <- plot_jaccard_heatmap(res_panel, group_order = as.character(1:4),
+                           clustering_method = clustering_method,
+                           show_colnames = FALSE, plot = FALSE)
+print(hm$heatmap)
+```
+
+## Per-subtype characterisation
+
+```{r features}
+top_genes <- cluster_top_genes(LCBM_panel_maf, res_panel, top = 5)
+print(top_genes)
+
+plot_cluster_piechart(top_genes, top = 3)
+```
+
+An oncoplot of one subtype and the TMB comparison need a `maftools` `MAF`
+object, which the shipped `LCBM_*.maf` objects already are:
+
+```{r oncoplot, eval = FALSE}
+plot_cluster_oncoplot(LCBM_panel_maf, res_panel, cluster_id = 1, top = 20)
+```
+
+```{r tmb, eval = FALSE}
+tmb <- plot_tmb_by_cluster(LCBM_panel_maf, res_panel)
+tmb$plot
+tmb$wilcox
+```
+
+## Downstream: subtypes, histology and survival
+
+The TP53 / EGFR four-group split is derived from the MAF itself, so it needs no
+external data:
+
+```{r tp53-egfr}
+dat <- as.data.frame(LCBM_panel_maf@data)
+tp53_mut <- unique(as.character(dat$Tumor_Sample_Barcode[dat$Hugo_Symbol == "TP53"]))
+egfr_mut <- unique(as.character(dat$Tumor_Sample_Barcode[dat$Hugo_Symbol == "EGFR"]))
+
+subtype <- res_panel$sample_clusters
+subtype$TP53 <- ifelse(subtype$Tumor_Sample_Barcode %in% tp53_mut, "Mut", "WT")
+subtype$EGFR <- ifelse(subtype$Tumor_Sample_Barcode %in% egfr_mut, "Mut", "WT")
+subtype$group <- paste(subtype$TP53, subtype$EGFR, sep = " / ")
+
+print(table(subtype$group))
+print(table(cluster = subtype$cluster, group = subtype$group))
+```
+
+Histology comes from the annotation table. It follows the cBioPortal vocabulary
+and is mapped onto the four analysis subtypes (`NET` is merged into `LCNEC`):
+
+```{r histology}
+hist_map <- c(LUAD = "AdC", LUSC = "SqCC", SCLC = "SCLC",
+              LCNEC = "LCNEC", NET = "LCNEC")
+
+anno <- LCBM_sample_annotation[
+  match(subtype$Tumor_Sample_Barcode, LCBM_sample_annotation$Tumor_Sample_Barcode),
+  c("Tumor_Sample_Barcode", "Histology")]
+anno$subtype <- unname(hist_map[as.character(anno$Histology)])
+anno$cluster <- subtype$cluster
+
+print(table(cluster = anno$cluster, histology = anno$subtype, useNA = "ifany"))
+```
+
+Survival analysis uses `fit_km()` / `fit_cox()` on the same annotation table:
+
+```{r survival, fig.height = 5}
+cl <- res_panel$sample_clusters
+
+surv <- LCBM_sample_annotation[
+  match(cl$Tumor_Sample_Barcode, LCBM_sample_annotation$Tumor_Sample_Barcode),
+  c("Tumor_Sample_Barcode", "OS_time", "OS_status")]
+surv$cluster <- factor(cl$cluster)
+surv <- surv[!is.na(surv$OS_time) & !is.na(surv$OS_status), ]
+surv$OS_time <- as.numeric(surv$OS_time)
+surv$OS_status <- as.integer(surv$OS_status)
+
+fit <- fit_km(surv, time = "OS_time", event = "OS_status", group = "cluster")
+print(fit)
+```
+
+```{r cox, eval = FALSE}
+summary(fit_cox(surv, time = "OS_time", event = "OS_status", group = "cluster"))
+```
+
+```{r km, fig.height = 6, eval = FALSE}
+plot_km_curves(fit, surv)
+```
+
+## Running the full reproduction
+
+`inst/examples/LCBM_reproduction.R` runs everything in one go -- both cohorts,
+the silhouette curve, the heatmaps, the per-subtype oncoplots, the TMB
+comparison and the subtypes on the similarity heatmap -- and compares every
+table it produces against the expected results shipped in
+`inst/extdata/LCBM_expected/`:
+
+```r
+library(OncoclassfieR)
+source(system.file("examples", "LCBM_reproduction.R", package = "OncoclassfieR"))
+```
+
+## Reference
+
+`261005_panel_WES_jaccard_reproduction.md` in the analysis repository documents
+the upstream chain: which four cohort objects were merged, how the 298-gene
+intersection and the VAF filter were applied, and which saved result each
+number corresponds to.

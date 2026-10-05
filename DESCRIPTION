@@ -1,0 +1,45 @@
+Package: OncoclassfieR
+Type: Package
+Title: Jaccard Similarity Based Sample Classification for Cancer MAF Data
+Version: 0.2.0
+Authors@R:
+    person("OncoclassfieR", "Authors", email = "your.email@example.com",
+           role = c("aut", "cre"))
+Description: Classifies tumour samples into molecular subgroups based on
+    the Jaccard similarity of their mutation profiles, as implemented in the
+    LCBM/HSYY panel analysis pipeline.  The package pre-processes MAF
+    objects, computes pairwise Jaccard similarity matrices, performs
+    hierarchical clustering, re-draws the similarity heatmap in a given
+    subgroup order, and provides helpers for per-cluster gene ranking, pie
+    charts, oncoplots, TMB comparison and survival analysis.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 4.1.0)
+Imports:
+    cluster,
+    dplyr,
+    ggplot2,
+    ggpubr,
+    ggsci,
+    grDevices,
+    maftools,
+    methods,
+    pheatmap,
+    stats,
+    survival,
+    survminer,
+    viridis
+Suggests:
+    devtools,
+    knitr,
+    magick,
+    patchwork,
+    readr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
