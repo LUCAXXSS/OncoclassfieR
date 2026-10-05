@@ -12,7 +12,7 @@ Description: Classifies tumour samples into molecular subgroups based on
     hierarchical clustering, re-draws the similarity heatmap in a given
     subgroup order, and provides helpers for per-cluster gene ranking, pie
     charts, oncoplots, TMB comparison and survival analysis.
-License: MIT + file LICENSE
+License: MIT
 Encoding: UTF-8
 LazyData: true
 Depends:
