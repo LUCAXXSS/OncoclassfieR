@@ -84,10 +84,10 @@ While developing, load the package without installing it:
 devtools::load_all("path/to/OncoclassfieR")
 ```
 
-To install from GitHub, replace the placeholder below with the repository owner:
+To install from GitHub:
 
 ```r
-devtools::install_github("your-org/OncoclassfieR")
+devtools::install_github("LUCAXXSS/OncoclassfieR")
 ```
 
 `maftools` is a required dependency distributed through Bioconductor. If it is
