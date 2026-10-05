@@ -66,11 +66,16 @@ clinical annotation table (520 samples). These datasets are used by
 
 ## Installation
 
-Install `OncoclassfieR` from a local source directory using `devtools`:
+Install `OncoclassfieR` from GitHub using `devtools`:
 
 ```r
 install.packages("devtools")   # once
+devtools::install_github("LUCAXXSS/OncoclassfieR")
+```
 
+Alternatively, install from a local source directory:
+
+```r
 # from a local checkout (the directory holding DESCRIPTION)
 devtools::install("path/to/OncoclassfieR")
 
@@ -82,12 +87,6 @@ While developing, load the package without installing it:
 
 ```r
 devtools::load_all("path/to/OncoclassfieR")
-```
-
-To install from GitHub:
-
-```r
-devtools::install_github("LUCAXXSS/OncoclassfieR")
 ```
 
 `maftools` is a required dependency distributed through Bioconductor. If it is
