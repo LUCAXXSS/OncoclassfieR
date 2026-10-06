@@ -112,8 +112,24 @@ its MAF object, `res` its clustering result and `out_dir` the output directory.
 ### Data
 
 ```r
-LCBM_panel_maf        <- pkg_data("LCBM_panel_maf")
-LCBM_sample_annotation <- pkg_data("LCBM_sample_annotation")
+library(OncoclassfieR)
+
+# The real cohorts shipped with the package. `OncoclassfieR::` also works
+# under devtools::load_all(), so this chunk runs either way.
+LCBM_panel_maf         <- OncoclassfieR::LCBM_panel_maf
+LCBM_WES_maf           <- OncoclassfieR::LCBM_WES_maf
+LCBM_sample_annotation <- OncoclassfieR::LCBM_sample_annotation
+```
+
+The chunks below describe a single-cohort run: `maf` is the MAF object of the
+cohort being analysed, `grp` is its name (`"panel"` or `"WES"`) and `out_dir`
+is the directory the figures and tables are written to. For the panel cohort:
+
+```r
+grp     <- "panel"
+maf     <- LCBM_panel_maf
+out_dir <- "LCBM_panel_figures"
+dir.create(out_dir, showWarnings = FALSE)
 ```
 
 ### Clustering parameters
