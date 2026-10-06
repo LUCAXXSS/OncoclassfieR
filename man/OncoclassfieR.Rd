@@ -25,7 +25,7 @@ sample-clustering workflow used in the LCBM / HSYY panel analysis:
 }
 }
 \author{
-\strong{Maintainer}: OncoclassfieR Authors \email{your.email@example.com}
+\strong{Maintainer}: OncoclassfieR Authors \email{muyuan_you@163.com}
 
 }
 \keyword{internal}
