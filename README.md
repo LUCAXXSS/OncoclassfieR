@@ -114,20 +114,21 @@ its MAF object, `res` its clustering result and `out_dir` the output directory.
 ```r
 library(OncoclassfieR)
 
-# The real cohorts shipped with the package. `OncoclassfieR::` also works
-# under devtools::load_all(), so this chunk runs either way.
-LCBM_panel_maf         <- OncoclassfieR::LCBM_panel_maf
-LCBM_WES_maf           <- OncoclassfieR::LCBM_WES_maf
-LCBM_sample_annotation <- OncoclassfieR::LCBM_sample_annotation
+# The real cohorts and the clinical annotation table ship with the package.
+# The `::` form works both after install and under devtools::load_all().
+maf               <- OncoclassfieR::LCBM_panel_maf
+sample_annotation <- OncoclassfieR::LCBM_sample_annotation
+
+# To run the same workflow on the WES cohort instead:
+# maf <- OncoclassfieR::LCBM_WES_maf
 ```
 
-The chunks below describe a single-cohort run: `maf` is the MAF object of the
-cohort being analysed, `grp` is its name (`"panel"` or `"WES"`) and `out_dir`
-is the directory the figures and tables are written to. For the panel cohort:
+Every chunk below is written for a single-cohort run: `grp` names the cohort,
+`maf` is its MAF object and `out_dir` is where figures and tables are written.
+For the panel cohort:
 
 ```r
 grp     <- "panel"
-maf     <- LCBM_panel_maf
 out_dir <- "LCBM_panel_figures"
 dir.create(out_dir, showWarnings = FALSE)
 ```
@@ -196,7 +197,7 @@ panel_cols  <- c("1" = "#E64B35", "2" = "#4DBBD5",
                  "3" = "#00A087", "4" = "#3C5488")
 
 set.seed(seed)
-maf_top <- preprocess_maf_top_genes(LCBM_panel_maf, max_features = max_features,
+maf_top <- preprocess_maf_top_genes(maf, max_features = max_features,
                                     drop_empty_samples = TRUE)
 res <- jaccard_cluster(maf_top, n_clusters = n_clusters,
                        clustering_method = clustering_method,
