@@ -15,3 +15,6 @@ output_shortest_analysis/
 
 # OS files
 .DS_Store
+
+# Raw data preparation scripts (kept local only)
+data-raw/
