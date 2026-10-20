@@ -9,8 +9,7 @@ A \code{MAF} object: 4691 variants, 358 samples, 292 genes.
 }
 \source{
 Huashan panel cohort and cBioPortal MSK-IMPACT cohort, combined
-by the LCBM / HSYY analysis pipeline
-(\verb{260916_maf_panel299_vaf002_panel.rds}).
+by the LCBM / HSYY analysis pipeline.
 }
 \usage{
 LCBM_panel_maf
@@ -18,9 +17,8 @@ LCBM_panel_maf
 \description{
 A \code{MAF} object (from the \code{maftools} package) holding the harmonised
 somatic mutations of the LCBM panel cohort: the Huashan panel cohort
-merged with the cBioPortal (MSK-IMPACT) cohort, restricted to the 298
-genes shared by the Huashan panel and MSK-505, and filtered to
-VAF >= 2\% (rows with a missing VAF are kept).
+merged with the cBioPortal (MSK-IMPACT) cohort and filtered to VAF >= 2\%
+(rows with a missing VAF are kept).
 }
 \details{
 This is the direct input of the panel Jaccard 4-subtype clustering with

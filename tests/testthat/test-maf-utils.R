@@ -15,6 +15,19 @@ test_that("shape_maf harmonises and tags cohorts", {
   expect_true(all(out$cohort_name == "WES"))
 })
 
+test_that("shape_maf keeps all input genes by default", {
+  df <- data.frame(
+    Tumor_Sample_Barcode = c("S1", "S1", "S2", "S3"),
+    Hugo_Symbol = c("APOB", "TTN", "MUC16", "TP53")
+  )
+  out <- shape_maf(df, colnames(df), cohort_name = "custom")
+
+  expect_identical(out$Tumor_Sample_Barcode, df$Tumor_Sample_Barcode)
+  expect_identical(out$Hugo_Symbol, df$Hugo_Symbol)
+  expect_equal(nrow(out), nrow(df))
+  expect_true(all(out$cohort_name == "custom"))
+})
+
 test_that("plot_tmb_by_cluster returns a plot and wilcox table", {
   skip_if_not_installed("maftools")
   maf <- maftools::read.maf(wes_subset())

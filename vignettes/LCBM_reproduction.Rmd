@@ -50,10 +50,9 @@ Three real datasets ship with the package:
 * `LCBM_sample_annotation` — clinical annotation for all 515 samples, keyed on
   `Tumor_Sample_Barcode`.
 
-Both MAF objects are already restricted to the 298 genes shared by the
-Huashan panel and MSK-505 and already filtered to `VAF >= 0.02`. The upstream
-steps that produced them are **not** part of this package: the raw four-cohort
-files are not distributed, so the reproduction starts from these objects.
+Both MAF objects are already filtered to `VAF >= 0.02`. The upstream steps
+that produced them are **not** part of this package: the raw four-cohort files
+are not distributed, so the reproduction starts from these objects.
 
 ## Reproducing the 4-subtype split
 
@@ -236,6 +235,5 @@ source(system.file("examples", "LCBM_reproduction.R", package = "OncoclassfieR")
 ## Reference
 
 `261005_panel_WES_jaccard_reproduction.md` in the analysis repository documents
-the upstream chain: which four cohort objects were merged, how the 298-gene
-intersection and the VAF filter were applied, and which saved result each
-number corresponds to.
+the upstream chain: which four cohort objects were merged, how the VAF filter
+was applied, and which saved result each number corresponds to.

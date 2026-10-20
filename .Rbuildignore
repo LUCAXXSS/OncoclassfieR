@@ -2,7 +2,6 @@
 ^\.gitignore$
 Rplots\.pdf$
 ^\.Rproj\.user$
-^data-raw$
 ^\.Rhistory$
 ^README\.Rmd$
 ^.*\.Rproj$

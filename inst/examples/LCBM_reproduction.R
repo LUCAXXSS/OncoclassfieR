@@ -26,10 +26,10 @@
 #   panel  cohort: 342 samples clustered -> 178 / 65 / 73 / 26
 #   WES    cohort: 145 samples clustered ->  28 / 71 / 28 / 18
 #
-# Upstream steps (merging the four cohorts, restricting to the 298 shared
-# panel genes and filtering VAF >= 2%) are NOT reproduced here, because the
-# raw cohort files are not distributed with the package. This script starts
-# from the already filtered objects LCBM_panel_maf and LCBM_WES_maf.
+# Upstream steps (merging the four cohorts and filtering VAF >= 2%) are NOT
+# reproduced here, because the raw cohort files are not distributed with the
+# package. This script starts from the already filtered objects LCBM_panel_maf
+# and LCBM_WES_maf.
 #
 # Usage:
 #
@@ -53,7 +53,7 @@ suppressPackageStartupMessages({
 # 0. Output directory and package data access
 # -----------------------------------------------------------------------------
 # The output directory is the first command line argument. Scripts that
-# source this file (e.g. data-raw/make_readme_figures.R) can set it through
+# source this file can set it through
 # options(OncoclassfieR.out_dir = "...") instead of commandArgs().
 args    <- commandArgs(trailingOnly = TRUE)
 out_dir <- getOption("OncoclassfieR.out_dir",

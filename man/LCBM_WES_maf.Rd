@@ -9,8 +9,7 @@ A \code{MAF} object: 1585 variants, 157 samples, 266 genes.
 }
 \source{
 WES_SHANGHAI cohort and cellreport_WES cohort, harmonised by the
-LCBM / HSYY analysis pipeline
-(\verb{260916_maf_panel299_vaf002_WES.rds}).
+LCBM / HSYY analysis pipeline.
 }
 \usage{
 LCBM_WES_maf
@@ -18,8 +17,8 @@ LCBM_WES_maf
 \description{
 A \code{MAF} object (from the \code{maftools} package) holding the harmonised
 somatic mutations of the LCBM whole-exome cohort: the WES_SHANGHAI
-cohort merged with the cellreport_WES cohort, put through the same
-298-gene restriction and VAF >= 2\% filter as the panel cohort.
+cohort merged with the cellreport_WES cohort and filtered to VAF >= 2\%
+(rows with a missing VAF are kept).
 }
 \details{
 This is the direct input of the WES Jaccard 4-subtype clustering with the
