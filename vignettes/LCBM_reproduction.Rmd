@@ -37,7 +37,6 @@ too much for a joint clustering to be interpreted biologically.
 | `n_clusters` | 4 |
 | `drop_empty_samples` | `TRUE` |
 | seed | 1234 |
-| VAF filter (upstream) | `VAF >= 0.02`, missing VAF kept |
 
 ## The data
 
@@ -50,9 +49,7 @@ Three real datasets ship with the package:
 * `LCBM_sample_annotation` — clinical annotation for all 515 samples, keyed on
   `Tumor_Sample_Barcode`.
 
-Both MAF objects are already filtered to `VAF >= 0.02`. The upstream steps
-that produced them are **not** part of this package: the raw four-cohort files
-are not distributed, so the reproduction starts from these objects.
+The analysis below uses these datasets directly.
 
 ## Reproducing the 4-subtype split
 
@@ -234,6 +231,5 @@ source(system.file("examples", "LCBM_reproduction.R", package = "OncoclassfieR")
 
 ## Reference
 
-`261005_panel_WES_jaccard_reproduction.md` in the analysis repository documents
-the upstream chain: which four cohort objects were merged, how the VAF filter
-was applied, and which saved result each number corresponds to.
+Additional analysis notes and result provenance are available in
+`261005_panel_WES_jaccard_reproduction.md` in the analysis repository.
